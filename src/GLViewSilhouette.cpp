@@ -124,9 +124,22 @@ void GLViewSilhouette::onKeyDown( const SDL_KeyboardEvent& key )
    if( key.keysym.sym == SDLK_0 )
       this->setNumPhysicsStepsPerRender( 1 );
 
-   if( key.keysym.sym == SDLK_1 )
+   if( key.keysym.sym == SDLK_UP )
    {
+       for (auto i = 0; i < this->worldLst->size(); i++) {
+           if (this->worldLst->at(i)->getLabel() == "Light") {
+               this->worldLst->at(i)->setPosition(this->worldLst->at(i)->getPosition() + Vector(0, 0, 1));
+           }
+       }
+   }
 
+   if (key.keysym.sym == SDLK_DOWN)
+   {
+       for (auto i = 0; i < this->worldLst->size(); i++) {
+           if (this->worldLst->at(i)->getLabel() == "Light") {
+               this->worldLst->at(i)->setPosition(this->worldLst->at(i)->getPosition() - Vector(0, 0, 1));
+           }
+       }
    }
 }
 
@@ -158,9 +171,10 @@ void Aftr::GLViewSilhouette::loadMap()
    
    //SkyBox Textures readily available
    std::vector< std::string > skyBoxImageNames; //vector to store texture paths
+   skyBoxImageNames.push_back(ManagerEnvironmentConfiguration::getLMM() + "/images/Solid_black.png");
    //skyBoxImageNames.push_back( ManagerEnvironmentConfiguration::getSMM() + "/images/skyboxes/sky_water+6.jpg" );
    //skyBoxImageNames.push_back( ManagerEnvironmentConfiguration::getSMM() + "/images/skyboxes/sky_dust+6.jpg" );
-   skyBoxImageNames.push_back( ManagerEnvironmentConfiguration::getSMM() + "/images/skyboxes/sky_mountains+6.jpg" );
+   //skyBoxImageNames.push_back( ManagerEnvironmentConfiguration::getSMM() + "/images/skyboxes/sky_mountains+6.jpg" );
    //skyBoxImageNames.push_back( ManagerEnvironmentConfiguration::getSMM() + "/images/skyboxes/sky_winter+6.jpg" );
    //skyBoxImageNames.push_back( ManagerEnvironmentConfiguration::getSMM() + "/images/skyboxes/early_morning+6.jpg" );
    //skyBoxImageNames.push_back( ManagerEnvironmentConfiguration::getSMM() + "/images/skyboxes/sky_afternoon+6.jpg" );
@@ -186,16 +200,21 @@ void Aftr::GLViewSilhouette::loadMap()
 
    {
       //Create a light
-      float ga = 0.1f; //Global Ambient Light level for this module
-      ManagerLight::setGlobalAmbientLight( aftrColor4f( ga, ga, ga, 1.0f ) );
+      float ga = 0.0f; //Global Ambient Light level for this module
+      ManagerLight::setGlobalAmbientLight( aftrColor4f( ga, ga, ga, 0.0f ) );
       WOLight* light = WOLight::New();
-      light->isDirectionalLight( true );
-      light->setPosition( Vector( 0, 0, 100 ) );
+      light->isDirectionalLight( false );
+      light->setPosition( Vector( 0, 0, -10 ) );
       //Set the light's display matrix such that it casts light in a direction parallel to the -z axis (ie, downwards as though it was "high noon")
       //for shadow mapping to work, this->glRenderer->isUsingShadowMapping( true ), must be invoked.
       light->getModel()->setDisplayMatrix( Mat4::rotateIdentityMat( { 0, 1, 0 }, 90.0f * Aftr::DEGtoRAD ) );
       light->setLabel( "Light" );
       worldLst->push_back( light );
+   }
+
+   {
+       WO* wo = WO::New(ManagerEnvironmentConfiguration::getLMM() + "/spotlight/25479 2013.max");
+       worldLst->push_back(wo);
    }
 
    {
@@ -320,13 +339,9 @@ void Aftr::GLViewSilhouette::loadMap()
    gui->subscribe_drawImGuiWidget(
       [this, gui]() //this is a lambda, the capture clause is in [], the input argument list is in (), and the body is in {}
       {
-         ImGui::ShowDemoWindow(); //Displays the default ImGui demo from C:/repos/aburn/engine/src/imgui_implot/implot_demo.cpp
-         WOImGui::draw_AftrImGui_Demo( gui ); //Displays a small Aftr Demo from C:/repos/aburn/engine/src/aftr/WOImGui.cpp
-         ImPlot::ShowDemoWindow(); //Displays the ImPlot demo using ImGui from C:/repos/aburn/engine/src/imgui_implot/implot_demo.cpp
+
       } );
    this->worldLst->push_back( gui );
-
-   createSilhouetteWayPoints();
 }
 
 
