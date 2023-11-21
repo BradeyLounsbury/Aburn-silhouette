@@ -213,8 +213,8 @@ void Aftr::GLViewSilhouette::loadMap()
    }
 
    {
-       WO* wo = WO::New(ManagerEnvironmentConfiguration::getLMM() + "/spotlight/25479 2013.max");
-       worldLst->push_back(wo);
+       //WO* wo = WO::New(ManagerEnvironmentConfiguration::getLMM() + "/spotlight/25479 2013.max");
+       //worldLst->push_back(wo);
    }
 
    {
