@@ -85,12 +85,25 @@ GLViewSilhouette::~GLViewSilhouette()
    //Implicitly calls GLView::~GLView()
 }
 
-
+static bool move_forward, move_left, move_right, move_backward = false;
 void GLViewSilhouette::updateWorld()
 {
    GLView::updateWorld(); //Just call the parent's update world first.
                           //If you want to add additional functionality, do it after
                           //this call.
+
+   if (move_forward) {
+       this->cam->moveInLookDirection();
+   }
+   if (move_left) {
+       this->cam->moveLeft();
+   }
+   if (move_right) {
+       this->cam->moveRight();
+   }
+   if (move_backward) {
+       this->cam->moveOppositeLookDirection();
+   }
 }
 
 
@@ -124,6 +137,23 @@ void GLViewSilhouette::onKeyDown( const SDL_KeyboardEvent& key )
    if( key.keysym.sym == SDLK_0 )
       this->setNumPhysicsStepsPerRender( 1 );
 
+   if (key.keysym.sym == SDLK_w)
+   {
+       move_forward = true;
+   }
+   if (key.keysym.sym == SDLK_a)
+   {
+       move_left = true;
+   }
+   if (key.keysym.sym == SDLK_s)
+   {
+       move_backward = true;
+   }
+   if (key.keysym.sym == SDLK_d)
+   {
+       move_right = true;
+   }
+
    if( key.keysym.sym == SDLK_UP )
    {
        for (auto i = 0; i < this->worldLst->size(); i++) {
@@ -147,6 +177,23 @@ void GLViewSilhouette::onKeyDown( const SDL_KeyboardEvent& key )
 void GLViewSilhouette::onKeyUp( const SDL_KeyboardEvent& key )
 {
    GLView::onKeyUp( key );
+
+   if (key.keysym.sym == SDLK_w)
+   {
+       move_forward = false;
+   }
+   if (key.keysym.sym == SDLK_a)
+   {
+       move_left = false;
+   }
+   if (key.keysym.sym == SDLK_s)
+   {
+       move_backward = false;
+   }
+   if (key.keysym.sym == SDLK_d)
+   {
+       move_right = false;
+   }
 }
 
 
